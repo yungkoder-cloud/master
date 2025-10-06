@@ -1,0 +1,39 @@
+{
+    "name": "PhotoStack",
+    "short_name": "PhotoStack",
+    "description": "Convert, resize, watermark, and crop images in a few clicks.",
+    "icons": [
+        {
+            "src": "img/icon_x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "img/icon_x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "img/maskable_icon_x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable",
+            "purpose": "any"
+        },
+        {
+            "src": "img/maskable_icon_x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "theme_color": "#3d5f7f",
+    "background_color": "#212529",
+    "display": "standalone",
+    "orientation": "any",
+    "lang": "en",
+    "categories": ["design", "graphics", "graphics & design", "photo", "photo & video"],
+    "start_url": "/edit?utm_source=Installed%20App&utm_medium=Home%20Screen"
+}

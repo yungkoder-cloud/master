@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html data-photostack-mode="photo-editor">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PhotoStack</title>
+    <meta name="robots" content="noindex">
+    <meta name="description" content="PhotoStack can convert, resize, watermark, and crop images in a few clicks.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/photostack-styles.css">
+    <script src="/js/shared.js"></script>
+    <!-- Icons and theme -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="24x24" href="/img/icon_x24.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="theme-color" content="#6c757d">
+    <!-- Open Graph card -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="PhotoStack" />
+    <meta property="og:description" content="Convert, resize, watermark, and crop images in a few clicks." />
+    <meta property="og:image" content="https://photostack.app/img/maskable_icon_x512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta name="og:image:alt" content="PhotoStack icon" />
+    <meta name="twitter:card" content="summary" />
+    <!-- Analytics -->
+    <script defer data-domain="photostack.app" src="https://plausible.io/js/plausible.js"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar fixed-top bg-body-secondary navbar-expand-sm border-bottom d-print-none">
+        <div class="container-fluid">
+            <a class="navbar-brand d-sm-none" href="#">PhotoStack</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi bi-house-fill"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">
+                            <i class="bi bi-images"></i>
+                            Editor
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/watermarks/">
+                            <i class="bi bi-pencil"></i>
+                            Watermarks
+                        </a>
+                    </li>
+                </ul>
+                <form class="d-flex flex-column flex-sm-row">
+                    <!-- Import button -->
+                    <button class="btn btn-primary me-0 me-sm-2 mt-2 mt-sm-0" id="photostack-import-file-btn" type="button" aria-label="Import">
+                        <i class="bi bi-folder-plus me-2 me-sm-0 me-md-2"></i>
+                        <span class="d-sm-none d-md-inline me-2 me-sm-0 me-md-2">Import</span>
+                        <span class="badge bg-dark photostack-image-count d-sm-none d-md-inline">0</span>
+                    </button>
+                    <!-- Clear button -->
+                    <button class="btn btn-primary me-0 me-sm-2 mt-2 mt-sm-0" id="photostack-clear-images-btn" type="button" aria-label="Clear">
+                        <i class="bi bi-trash me-2 me-sm-0 me-md-2"></i>
+                        <span class="d-sm-none d-md-inline">Clear</span>
+                    </button>
+                    <!-- Export button -->
+                    <button class="btn btn-primary me-0 me-sm-2 mt-2 mt-sm-0" type="button" data-bs-toggle="modal" data-bs-target="#photostack-export-modal" data-backdrop="static" data-keyboard="false" disabled aria-label="Export">
+                        <i class="bi bi-save me-2 me-sm-0 me-md-2"></i>
+                        <span class="d-sm-none d-md-inline">Export</span>
+                    </button>
+                    <!-- Theme toggle -->
+                    <button class="btn btn-primary dropdown-toggle mt-2 mt-sm-0" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle theme">
+                        <i class="bi bi-moon-stars-fill me-2 me-sm-0 me-md-2"></i>
+                        <span class="d-sm-none">Change theme</span>
+                    </button>
+                    <div class="dropdown">
+                        <ul class="dropdown-menu dropdown-menu-end w-100 w-sm-auto">
+                            <li><a class="dropdown-item photostack-theme-btn" data-theme="light" href="#">
+                                    <i class="bi bi-brightness-high-fill me-2"></i>
+                                    Light mode
+                                </a></li>
+                            <li><a class="dropdown-item photostack-theme-btn" data-theme="dark" href="#">
+                                    <i class="bi bi-moon-fill me-2"></i>
+                                    Dark mode
+                                </a></li>
+                            <li><a class="dropdown-item photostack-theme-btn" data-theme="auto" href="#">
+                                    <i class="bi bi-circle-half me-2"></i>
+                                    Auto theme
+                                </a></li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main container -->
+    <div class="container-fluid d-print-none">
+        <div class="row">
+            <!-- Preview container -->
+            <div class="col-12 col-md-8 photostack-preview-container text-center">
+                <div class="d-inline-flex align-items-center" id="photostack-editor-preview">
+                    <!-- Temporary text for when no photos are imported -->
+                    <div id="photostack-preview-info" class="p-3 p-md-5 text-center w-100">
+                        <p>To get started, <span class="d-sm-none">click the menu button at the top-right of the screen, then click <i class="bi bi-folder-plus"></i> Import</span><span class="d-none d-sm-inline">click the <i class="bi bi-folder-plus"></i> Import button at the top-right of the screen</span> to import some images. When you're ready to save your work, click the <i class="bi bi-save"></i> Export button.</p>
+                        <p class="text-muted" id="photostack-file-format-list">Checking supported files...</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Settings panel container -->
+            <div class="col-12 col-md-4 pb-5">
+                <!-- Safari message -->
+                <div class="alert alert-warning photostack-safari-warning mt-3" data-bs-toggle="modal" data-bs-target="#photostack-safari-modal" style="display: none; cursor: pointer;">
+                    Safari may periodically delete PhotoStack's data, including saved watermarks. Click for more information.
+                </div>
+                <!-- Resize card -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        Resize
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="photostack-image-width" class="form-label">Maximum image width (pixels)</label>
+                            <input type="number" class="form-control photostack-preview-update" id="photostack-image-width" autocomplete="off" enterkeyhint="done" placeholder="500">
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary w-100" type="button" id="photostack-reset-image-width-button">Reset image size</button>
+                        </div>
+                        <div class="mb-0">
+                            <label for="photostack-resize-unsharp-amount" class="form-label">Sharpness</label>
+                            <input type="number" class="form-control photostack-preview-update" id="photostack-resize-unsharp-amount" autocomplete="off" value="50" placeholder="50" min="1" max="100" enterkeyhint="done">
+                            <div class="form-text">Choose a value from 1-100. Default is 50.</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Advertisements card -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        Advertisement
+                    </div>
+                    <div class="card-body" style="padding: 0; overflow: hidden;">
+                        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8658798838164073" data-ad-slot="2199465112" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                        <div class="photostack-ads-fallback p-3">
+                            You're blocking ads! Please <a href="/#support">donate</a> to support continued development!
+                        </div>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                </div>
+                <!-- Watermarks card-->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        Watermark
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <select class="form-select photostack-preview-update" id="photostack-watermark-select" autocomplete="off">
+                                <option selected value="no-watermark">No watermark</option>
+                            </select>
+                        </div>
+                        <a href="/watermarks">Edit watermarks</a>
+                    </div>
+                </div>
+                <!-- Border card -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        Border
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input type="number" class="form-control input-group photostack-preview-update" placeholder="Border width (px)" id="photostack-border-width" autocomplete="off" min="0" enterkeyhint="done">
+                            <input type="color" class="form-control form-control-color input-group photostack-preview-update" id="photostack-border-color" autocomplete="off" value="#00FF00">
+                        </div>
+                    </div>
+                </div>
+                <!-- Resize card -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        Crop
+                    </div>
+                    <div class="card-body pt-0 row">
+                        <div class="col-12 col-sm-6 mt-3">
+                            <label for="photostack-crop-top" class="form-label">Top</label>
+                            <input type="number" class="form-control photostack-preview-update" id="photostack-crop-top" autocomplete="off" enterkeyhint="done" value="0">
+                        </div>
+                        <div class="col-12 col-sm-6 mt-3">
+                            <label for="photostack-crop-left" class="form-label">Left</label>
+                            <input type="number" class="form-control photostack-preview-update" id="photostack-crop-left" autocomplete="off" enterkeyhint="done" value="0">
+                        </div>
+                        <div class="col-12 col-sm-6 mt-3">
+                            <label for="photostack-crop-right" class="form-label">Right</label>
+                            <input type="number" class="form-control photostack-preview-update" id="photostack-crop-right" autocomplete="off" enterkeyhint="done" value="0">
+                        </div>
+                        <div class="col-12 col-sm-6 mt-3">
+                            <label for="photostack-crop-bottom" class="form-label">Bottom</label>
+                            <input type="number" class="form-control photostack-preview-update" id="photostack-crop-bottom" autocomplete="off" enterkeyhint="done" value="0">
+                        </div>
+                        <div class="col-12 mt-3">
+                            <small class="form-text text-muted">Enter the number of pixels you want to remove from each side. Cropping occurs before resizing.</small>
+                        </div>
+                    </div>
+                </div>
+                <!-- Other options card-->
+                <div class="card mt-3 mb-3">
+                    <div class="card-header">
+                        Miscellaneous
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="photostack-exif" checked disabled>
+                            <label class="form-check-label" for="photostack-exif">Remove EXIF data</label>
+                        </div>
+                    </div>
+                </div>
+                <p>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#photostack-keyboard-modal" data-backdrop="static" data-keyboard="false">Keyboard shortcuts</a>
+                </p>
+                <p>
+                    <a href="#" id="photostack-print-btn">Print preview</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- Keyboard shortcuts modal -->
+    <div class="modal fade" id="photostack-keyboard-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photostack-export-modal-label">Keyboard shortcuts</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>PhotoStack offers keyboard shortcuts for common functions. They may not work with all browsers.</p>
+                    <p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Command</th>
+                                <th scope="col">Shortcuts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Import images</td>
+                                <td>
+                                    Ctrl + Shift + I (PC)
+                                    <br />
+                                    Cmd + Shift + I (Mac)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Export images</td>
+                                <td>
+                                    Ctrl + S (PC)
+                                    <br />
+                                    Cmd + S (Mac)
+                                    <br />
+                                    Shift + E
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Clear imported images</td>
+                                <td>
+                                    Ctrl + D (PC)
+                                    <br />
+                                    Cmd + D (Mac)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Print image preview</td>
+                                <td>
+                                    Ctrl + P (PC)
+                                    <br>
+                                    Cmd + P (Mac)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Safari storage help modal -->
+    <div class="modal fade" id="photostack-safari-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photostack-safari-modal-label">Important info for Safari</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Safari has a <a href="https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/" target="_blank">seven-day cap on all locally-stored data</a> by websites in version 13.1 and higher. Unless you open PhotoStack at least once a week, <b>your saved watermarks could be deleted</b>.</p>
+                    <p>You can avoid data deletion, and hide the warning in PhotoStack, by adding PhotoStack to your Home Screen on iOS or Dock on macOS. The installed version of PhotoStack uses its own data storage that is not automatically deleted.</p>
+                    <p>You can also periodically export your watermarks as files, then re-import them after Safari wipes PhotoStack's data.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Drag and drop modal -->
+    <div class="modal fade" id="photostack-drag-modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="modal-body text-center lead">
+                        Drop images to import
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Export modal -->
+    <div class="modal fade" id="photostack-export-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <!-- Initial UI -->
+            <div class="modal-content photostack-export-modal-initial">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photostack-export-modal-label">
+                        Export
+                        <span class="photostack-image-count">0</span>
+                        images
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="photostack-file-format">File format</label>
+                        <select class="form-select mt-1" id="photostack-file-format" autocomplete="on">
+                            <option value="image/jpeg">JPEG (.jpg)</option>
+                            <option value="image/png">Portable Network Graphics (.png)</option>
+                            <option value="image/webp">WebP (.webp)</option>
+                        </select>
+                        <small class="form-text text-muted">Image format support varies by browser.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="photostack-file-quality">Image quality</label>
+                        <input type="number" class="form-control mt-1" id="photostack-file-quality" value="92" min="1" max="100" autocomplete="on" enterkeyhint="done">
+                        <small class="form-text text-muted">Choose a value from 1-100.</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="photostack-file-name" value="photostack-file-keep-name" id="photostack-file-keep-name">
+                            <label class="form-check-label" for="photostack-file-keep-name">
+                                Keep original file names
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="photostack-file-name" value="photostack-file-use-pattern" id="photostack-file-use-pattern" checked>
+                            <label class="form-check-label" for="photostack-file-use-pattern">
+                                Use pattern for file names
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="photostack-file-name-pattern" autocomplete="on" placeholder="Name pattern" value="Image" enterkeyhint="done">
+                    </div>
+                    <button type="button" id="photostack-start-export-btn" class="btn w-100 btn-primary">Start export</button>
+                </div>
+            </div>
+            <!-- Export in progress modal -->
+            <div class="modal-content photostack-export-modal-loading" style="display:none">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photostack-export-modal-label">Export images</h5>
+                </div>
+                <div class="modal-body">
+                    <p style="text-align: center;">Please wait while the images are being exported...</p>
+                    <p>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%" id="photostack-export-modal-progress"></div>
+                    </div>
+                    </p>
+                    <p class="text-muted" style="text-align: center;">
+                        Some browsers throttle background windows and tabs. To speed up exports, don't minimize PhotoStack or switch to another tab/window.
+                    </p>
+                </div>
+            </div>
+            <!-- Completed export modal -->
+            <div class="modal-content photostack-export-modal-finished" style="display:none">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photostack-export-modal-label">Export images</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="photostack-legacy-download">
+                        <button type="button" id="photostack-export-separate-button" class="btn w-100 btn-primary">
+                            Save images to Downloads
+                            <br>
+                            (may not work in all browsers)
+                        </button>
+                    </div>
+                    <button type="button" id="photostack-export-filesystem-api-button" class="btn w-100 btn-primary mt-3">Save images to device</button>
+                    <button type="button" id="photostack-export-web-share-button" class="btn w-100 btn-primary mt-3">Share images to installed application</button>
+                    <button type="button" id="photostack-export-zip-button" class="btn w-100 btn-primary mt-3">Save images as ZIP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Import toast -->
+    <div class="toast-container position-fixed bottom-0 start-0 d-print-none">
+        <!-- Import toast -->
+        <div id="photostack-import-toast" class="toast m-2 m-md-4" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body">
+                <div class="d-flex align-items-center">
+                    <strong>Importing photos...</strong>
+                    <div class="spinner-border spinner-border-sm ms-auto" role="status" aria-hidden="true"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Error toast -->
+    <div class="toast-container position-fixed bottom-0 start-0 p-3 d-print-none">
+        <!-- Import toast -->
+        <div id="photostack-error-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Error :(</strong>
+            </div>
+            <div class="toast-body">
+                There was an error, please try that again in a few seconds or reload PhotoStack.
+            </div>
+        </div>
+    </div>
+    <!-- Print UI -->
+    <div class="d-none d-print-block text-center">
+        <img id="photostack-print-preview">
+    </div>
+    <!-- File pickers -->
+    <input type="file" id="photostack-import-file" multiple accept="image/jpeg,image/png,image/gif,image/bmp,application/zip,application/x-zip,application/x-zip-compressed,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.spreadsheetml.template,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.presentationml.template,application/vnd.openxmlformats-officedocument.presentationml.slideshow">
+    <!-- Container where original photos are kept as <img> elements -->
+    <div id="photostack-original-container" aria-hidden="true"></div>
+    <!-- Container where canvas elements for each image are kept -->
+    <div id="photostack-canvas-container" aria-hidden="true"></div>
+    <!-- Watermark image cache -->
+    <img id="photostack-watermark-cache">
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/localforage@1.9.0/dist/localforage.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pica@7.0.0/dist/pica.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="/js/photostack-editor.js"></script>
+    <script src="/js/register-sw.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8658798838164073" crossorigin="anonymous"></script>
+</body>
+
+</html>

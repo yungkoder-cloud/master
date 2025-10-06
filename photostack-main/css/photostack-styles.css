@@ -1,0 +1,113 @@
+body {
+    overscroll-behavior-y: none;
+    padding-top: 56px;
+}
+
+#photostack-watermark-preview,
+#photostack-editor-preview img,
+#photostack-watermark-editor-preview {
+    pointer-events: none;
+    user-select: none;
+    max-width: 100%;
+}
+
+#photostack-editor-preview img {
+    pointer-events: none;
+}
+
+#photostack-watermark-editor-preview {
+    border-radius: 0.25rem;
+}
+
+#photostack-editor-preview {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 58px;
+}
+
+#photostack-original-container,
+#photostack-canvas-container,
+#photostack-import-file,
+#photostack-watermark-file-import,
+#photostack-import-zip,
+#photostack-watermark-import-image,
+#photostack-watermark-cache {
+    display: none;
+}
+
+#photostack-watermark-editor-modal .modal-dialog {
+    max-width: 900px;
+}
+
+ins.adsbygoogle[data-ad-status]+.photostack-ads-fallback {
+    display: none;
+}
+
+.toast-container.bottom-0 {
+    bottom: env(safe-area-inset-bottom, 0) !important;
+}
+
+/* Hide Safari warning in installed web app */
+
+@media all and (display-mode: standalone) {
+    .photostack-safari-warning {
+        display: none !important;
+    }
+}
+
+
+/* Styles for medium and up devices */
+
+@media (min-width: 768px) {
+
+    #photostack-editor-preview {
+        min-height: calc(100vh - 58px);
+    }
+
+    #photostack-editor-preview img {
+        max-height: calc(100vh - 58px);
+    }
+
+}
+
+/* Styles for medium/small/x-small devices */
+
+@media (max-width: 991.98px) {
+
+    /* Allow watermark editor to fill screen width */
+
+    #photostack-watermark-editor-modal .modal-dialog {
+        max-width: calc(100% - 15px);
+    }
+
+}
+
+/* Styles for small/x-small devices */
+
+@media (max-width: 767.98px) {
+
+    #photostack-editor-preview img {
+        max-height: 60vh;
+    }
+
+}
+
+/* Print styles */
+
+@media print {
+
+    body {
+        background: #ffffff;
+        color: #000;
+        font-size: 18px;
+        padding: 0;
+    }
+
+}
+
+#photostack-print-preview {
+    width: auto;
+    height: auto;
+    max-width: 100vw;
+    max-height: 100vh;
+}
